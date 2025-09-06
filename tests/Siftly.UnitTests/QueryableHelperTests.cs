@@ -1,71 +1,274 @@
+using Siftly.UnitTests.Helpers;
+using Siftly.UnitTests.Model;
+
 namespace Siftly.UnitTests
 {
-	[TestFixture]
-	public class QueryableHelperTests
-	{
-		private IQueryable<User> _testUsers;
+    [TestFixture]
+    public class QueryableHelperTests
+    {
+        private IQueryable<User> _users;
 
-		[SetUp]
-		public void Setup()
-		{
-			_testUsers = UserTestDataHelper.GetUsersQueryable();
-		}
+        [SetUp]
+        public void Setup()
+        {
+            _users = UserTestDataHelper.GetUsers().AsQueryable();
+        }
 
-		[Test]
-		public void Filter_ByStringProperty_ReturnsCorrectUser()
-		{
-			var result = Siftly.QueryableHelper.Filter(_testUsers, "Name", "Alice Smith").ToList();
-			Assert.That(result.Count, Is.EqualTo(1));
-			Assert.That(result[0].Name, Is.EqualTo("Alice Smith"));
-		}
+        [TestCase(nameof(User.Id), 1, 1)]
+        [TestCase(nameof(User.Id), 2, 1)]
+        [TestCase(nameof(User.Id), 11, 1)]
+        [TestCase(nameof(User.Id), 12, 1)]
+        [TestCase(nameof(User.Id), 0, 0)]
+        [TestCase(nameof(User.Id), 55, 0)]
+        public void FilterT_IntPropertyType_IdProperty_ReturnsFiltered(
+            string filteringProperty,
+            object filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, filteringValue).ToList();
 
-		[Test]
-		public void Filter_ByTypedProperty_ReturnsCorrectUser()
-		{
-			var result = Siftly.QueryableHelper.Filter<User, int>(_testUsers, "Id", 2).ToList();
-			Assert.That(result.Count, Is.EqualTo(1));
-			Assert.That(result[0].Name, Is.EqualTo("Bob Johnson"));
-		}
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
 
-		[Test]
-		public void Filter_ByPredicate_ReturnsUsersWithNullLastLogin()
-		{
-			var result = Siftly.QueryableHelper.Filter(_testUsers, u => u.LastLogin == null).ToList();
-			Assert.That(result.Count, Is.EqualTo(2));
-			Assert.That(result.Any(u => u.Name == "Bob Johnson"));
-			Assert.That(result.Any(u => u.Name == "Hannah Montana The Third of Her Name"));
-		}
+        [TestCase(nameof(User.SubscriptionId), 111555, 1)]
+        [TestCase(nameof(User.SubscriptionId), 3125674, 2)]
+        public void FilterT_NullableIntPropertyType_SubscriptionIdProperty_NotNull_ReturnsFiltered(
+            string filteringProperty,
+            object filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, filteringValue).ToList();
 
-		[Test]
-		public void Sort_ByName_Ascending_ReturnsSorted()
-		{
-			var result = Siftly.QueryableHelper.Sort(_testUsers, "Name").ToList();
-			var expected = _testUsers.OrderBy(u => u.Name).Select(u => u.Name).ToList();
-			Assert.That(result.Select(u => u.Name).ToList(), Is.EqualTo(expected));
-		}
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
 
-		[Test]
-		public void Sort_ById_Descending_ReturnsSorted()
-		{
-			var result = Siftly.QueryableHelper.Sort(_testUsers, "Id", Siftly.Model.SortingDirection.Descending).ToList();
-			var expected = _testUsers.OrderByDescending(u => u.Id).Select(u => u.Id).ToList();
-			Assert.That(result.Select(u => u.Id).ToList(), Is.EqualTo(expected));
-		}
+        [TestCase(nameof(User.SubscriptionId), 9)]
+        public void FilterT_NullableIntPropertyType_SubscriptionIdProperty_Null_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object subscriptionId = null;
 
-		[Test]
-		public void Sort_ByTypedSelector_Ascending_ReturnsSorted()
-		{
-			var result = Siftly.QueryableHelper.Sort(_testUsers, u => u.DateOfBirth).ToList();
-			var expected = _testUsers.OrderBy(u => u.DateOfBirth).Select(u => u.DateOfBirth).ToList();
-			Assert.That(result.Select(u => u.DateOfBirth).ToList(), Is.EqualTo(expected));
-		}
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, subscriptionId).ToList();
 
-		[Test]
-		public void Sort_ByTypedSelector_Descending_ReturnsSorted()
-		{
-			var result = Siftly.QueryableHelper.Sort(_testUsers, u => u.DateOfBirth, Siftly.Model.SortingDirection.Descending).ToList();
-			var expected = _testUsers.OrderByDescending(u => u.DateOfBirth).Select(u => u.DateOfBirth).ToList();
-			Assert.That(result.Select(u => u.DateOfBirth).ToList(), Is.EqualTo(expected));
-		}
-	}
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.Name), "Alice Smith", 2)]
+        [TestCase(nameof(User.Name), " ", 0)]
+        [TestCase(nameof(User.Name), "    ", 0)]
+        public void FilterT_StringPropertyType_NameProperty_NotNullOrEmpty_ReturnsFiltered(
+            string filteringProperty,
+            object filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.Name), 1)]
+        public void FilterT_StringPropertyType_NameProperty_Empty_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object filteringValue = "";
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.Name), 1)]
+        public void FilterT_StringPropertyType_NameProperty_Null_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object filteringValue = null;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.DateOfBirth), "2005-1-11", 2)]
+        [TestCase(nameof(User.DateOfBirth), "1998-3-19", 1)]
+        [TestCase(nameof(User.DateOfBirth), "1940-03-10", 1)]
+        [TestCase(nameof(User.DateOfBirth), "1990-1-01", 1)]
+        [TestCase(nameof(User.DateOfBirth), "2220-01-01", 0)]
+        public void FilterT_DateTimePropertyType_DateOfBirthProperty_ReturnsFiltered(
+            string filteringProperty,
+            string filteringValue,
+            int expectedCount)
+        {
+            // Arrange
+            object dateOfBirth = DateTime.Parse(filteringValue);
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, dateOfBirth).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.LastLogin), "1992-8-8", 1)]
+        [TestCase(nameof(User.LastLogin), "2101-1-1", 0)]
+        public void FilterT_NullableDateTimePropertyType_LastLoginProperty_NotNull_ReturnsFiltered(
+            string filteringProperty,
+            string filteringValue,
+            int expectedCount)
+        {
+            // Arrange
+            object lastLogin = DateTime.Parse(filteringValue);
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, lastLogin).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.LastLogin), 4)]
+        public void FilterT_NullableDateTimePropertyType_LastLoginProperty_Null_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object lastLogin = null;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, lastLogin).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.Verified), true, 7)]
+        [TestCase(nameof(User.Verified), false, 5)]
+        public void FilterT_BoolPropertyType_VerifiedProperty_ReturnsFiltered(
+            string filteringProperty,
+            bool filteringValue,
+            int expectedCount)
+        {
+            // Arrange
+            object verified = filteringValue;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, verified).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.HasLogged), true, 4)]
+        [TestCase(nameof(User.HasLogged), false, 5)]
+        public void FilterT_NullableBoolPropertyType_HasLoggedProperty_NotNull_ReturnsFiltered(
+            string filteringProperty,
+            bool filteringValue,
+            int expectedCount)
+        {
+            // Arrange
+            object hasLogged = filteringValue;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, hasLogged).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.HasLogged), 3)]
+        public void FilterT_NullableBoolPropertyType_HasLoggedProperty_Null_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object hasLogged = null;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, hasLogged).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.City)}", "Springfield", 1)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.City)}", "Shelbyville", 2)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.City)}", "", 0)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.City)}", " ", 0)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.City)}", "   ", 0)]
+        public void FilterT_NestedPropertyType_AddressCityProperty_NotNull_ReturnsFiltered(
+            string filteringProperty,
+            object filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.Address.City), 1)]
+        public void FilterT_NestedPropertyType_AddressCityProperty_Null_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object addressCity = null;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, addressCity).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+        
+        [TestCase(nameof(User.Address.Street), "789 Oak St", 1)]
+        [TestCase(nameof(User.Address.Street), "456 Elm St", 2)]
+        [TestCase(nameof(User.Address.Street),"   ", 1)]
+        [TestCase(nameof(User.Address.Street), "", 0)]
+        [TestCase(nameof(User.Address.Street), " ", 0)]
+        public void FilterT_NestedPropertyType_AddressStreetProperty_NotNull_ReturnsFiltered(
+            string filteringProperty,
+            object filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(nameof(User.Address.City), 1)]
+        public void FilterT_NestedPropertyType_AddressStreetProperty_Null_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object addressStreet = null;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, addressStreet).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+    }
 }
