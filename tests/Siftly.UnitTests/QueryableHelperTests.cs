@@ -90,6 +90,21 @@ namespace Siftly.UnitTests
             // Assert
             Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
         }
+        
+        [TestCase(nameof(User.Name), 1)]
+        public void FilterT_StringPropertyType_NameProperty_StringEmpty_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object filteringValue = string.Empty;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
 
         [TestCase(nameof(User.Name), 1)]
         public void FilterT_StringPropertyType_NameProperty_Null_ReturnsFiltered(
@@ -224,7 +239,7 @@ namespace Siftly.UnitTests
             Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
         }
 
-        [TestCase(nameof(User.Address.City), 1)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.City)}", 7)]
         public void FilterT_NestedPropertyType_AddressCityProperty_Null_ReturnsFiltered(
             string filteringProperty,
             int expectedCount)
@@ -238,12 +253,12 @@ namespace Siftly.UnitTests
             // Assert
             Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
         }
-        
-        [TestCase(nameof(User.Address.Street), "789 Oak St", 1)]
-        [TestCase(nameof(User.Address.Street), "456 Elm St", 2)]
-        [TestCase(nameof(User.Address.Street),"   ", 1)]
-        [TestCase(nameof(User.Address.Street), "", 0)]
-        [TestCase(nameof(User.Address.Street), " ", 0)]
+
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.Street)}", "789 Oak St", 1)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.Street)}", "456 Elm St", 2)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.Street)}", "   ", 1)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.Street)}", "", 1)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.Street)}", " ", 0)]
         public void FilterT_NestedPropertyType_AddressStreetProperty_NotNull_ReturnsFiltered(
             string filteringProperty,
             object filteringValue,
@@ -256,7 +271,22 @@ namespace Siftly.UnitTests
             Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
         }
 
-        [TestCase(nameof(User.Address.City), 1)]
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.Street)}", 1)]
+        public void FilterT_NestedPropertyType_AddressStreetProperty_StringEmpty_ReturnsFiltered(
+            string filteringProperty,
+            int expectedCount)
+        {
+            // Arrange
+            object street = string.Empty;
+
+            // Act
+            var result = QueryableHelper.Filter(_users, filteringProperty, street).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase($"{nameof(User.Address)}.{nameof(Address.Street)}", 6)]
         public void FilterT_NestedPropertyType_AddressStreetProperty_Null_ReturnsFiltered(
             string filteringProperty,
             int expectedCount)

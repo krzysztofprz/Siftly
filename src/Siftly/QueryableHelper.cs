@@ -215,24 +215,49 @@ namespace Siftly
         /// Gets an Expression representing a (possibly nested) property access.
         /// Example: "Address.City" -> x => x.Address.City
         /// </summary>
-        private static Expression GetNestedProperty(
-            Expression param,
-            string propertyPath)
+        private static Expression GetNestedProperty(Expression param, string propertyPath)
         {
-            var property = param;
+            Expression expression = param;
+
             foreach (var member in propertyPath.Split('.'))
             {
-                var propInfo = property.Type.GetProperty(member,
+                var propertyInfo = expression.Type.GetProperty(
+                    member,
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
-                if (propInfo == null)
+
+                if (propertyInfo == null)
                 {
                     return null;
                 }
 
-                property = Expression.Property(property, propInfo);
+                var propAccess = Expression.Property(expression, propertyInfo);
+
+                if (!expression.Type.IsValueType || Nullable.GetUnderlyingType(expression.Type) != null)
+                {
+                    Expression nullValue;
+
+                    if (!propertyInfo.PropertyType.IsValueType ||
+                        Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null)
+                    {
+                        nullValue = Expression.Constant(null, propertyInfo.PropertyType);
+                    }
+                    else
+                    {
+                        nullValue = Expression.Default(propertyInfo.PropertyType);
+                    }
+
+                    expression = Expression.Condition(
+                        Expression.Equal(expression, Expression.Constant(null, expression.Type)),
+                        nullValue,
+                        propAccess);
+
+                    continue;
+                }
+
+                expression = propAccess;
             }
 
-            return property;
+            return expression;
         }
     }
 }
