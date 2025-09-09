@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siftly", "src/Siftly/Siftly
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siftly.UnitTests", "tests\Siftly.UnitTests\Siftly.UnitTests.csproj", "{2BAB57C2-942B-4609-A3DE-22F5C7529A33}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FE00109D-A572-4455-9D98-3D04B0C9FF58}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{17181722-A091-4E91-9188-D07839EAA44A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siftly.Benchmark", "tests\Siftly.Benchmark\Siftly.Benchmark.csproj", "{F921C494-D6C9-480C-88B6-01BFFCAAC25D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +30,14 @@ Global
 		{2BAB57C2-942B-4609-A3DE-22F5C7529A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BAB57C2-942B-4609-A3DE-22F5C7529A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BAB57C2-942B-4609-A3DE-22F5C7529A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F921C494-D6C9-480C-88B6-01BFFCAAC25D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F921C494-D6C9-480C-88B6-01BFFCAAC25D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F921C494-D6C9-480C-88B6-01BFFCAAC25D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F921C494-D6C9-480C-88B6-01BFFCAAC25D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9D52C5D2-F458-4197-883B-4F32EAFE3C80} = {FE00109D-A572-4455-9D98-3D04B0C9FF58}
+		{2BAB57C2-942B-4609-A3DE-22F5C7529A33} = {17181722-A091-4E91-9188-D07839EAA44A}
+		{F921C494-D6C9-480C-88B6-01BFFCAAC25D} = {17181722-A091-4E91-9188-D07839EAA44A}
 	EndGlobalSection
 EndGlobal

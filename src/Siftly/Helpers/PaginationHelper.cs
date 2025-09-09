@@ -1,11 +1,11 @@
-using Siftly.Model;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Siftly.Model;
 
-namespace Siftly
+namespace Siftly.Helpers
 {
-    public static class PaginationHelper
+    public sealed class PaginationHelper
     {
         private const string Arg = "x";
 
@@ -16,7 +16,7 @@ namespace Siftly
             int skip,
             int take)
         {
-            return QueryableHelper
+            return SortingHelper
                 .Sort(source, orderBy, sortingDirection)
                 .Skip(skip)
                 .Take(take);
@@ -30,15 +30,15 @@ namespace Siftly
             int skip,
             int take)
         {
-            var param = Expression.Parameter(typeof(T), Arg);
-            var property = Expression.Property(param, orderBy);
-            var constant = Expression.Constant(value);
-            var equals = Expression.Equal(property, Expression.Convert(constant, property.Type));
-            var lambda = Expression.Lambda<Func<T, bool>>(equals, param);
+            // var param = Expression.Parameter(typeof(T), Arg);
+            // var property = Expression.Property(param, orderBy);
+            // var constant = Expression.Constant(value);
+            // var equals = Expression.Equal(property, Expression.Convert(constant, property.Type));
+            // var lambda = Expression.Lambda<Func<T, bool>>(equals, param);
 
-            return QueryableHelper
+            return SortingHelper
                 .Sort(source, orderBy, sortingDirection)
-                .Where(lambda)
+                // .Where(lambda)
                 .Skip(skip)
                 .Take(take);
         }
@@ -57,7 +57,7 @@ namespace Siftly
             var equals = Expression.Equal(property, Expression.Convert(constant, property.Type));
             var lambda = Expression.Lambda<Func<T, bool>>(equals, param);
 
-            return QueryableHelper
+            return SortingHelper
                 .Sort(source, orderBy, sortingDirection)
                 .Where(lambda)
                 .Skip(skip)
