@@ -8,7 +8,16 @@ namespace Siftly.UnitTests.Helpers
         {
             var users = new List<User>
             {
-                new User
+                new()
+                {
+                    Id = 2,
+                    Name = "Bob Johnson",
+                    DateOfBirth = new DateTime(1985, 5, 23),
+                    LastLogin = null,
+                    Verified = true,
+                    HasLogged = true
+                },
+                new()
                 {
                     Id = 1,
                     Name = "Alice Smith",
@@ -22,16 +31,16 @@ namespace Siftly.UnitTests.Helpers
                         City = "Springfield"
                     },
                 },
-                new User
+                new()
                 {
-                    Id = 2,
-                    Name = "Bob Johnson",
-                    DateOfBirth = new DateTime(1985, 5, 23),
-                    LastLogin = null,
+                    Id = 11,
+                    Name = "Alice Smith",
+                    DateOfBirth = new DateTime(1998, 3, 19),
+                    LastLogin = DateTime.UtcNow.AddDays(-11),
                     Verified = true,
                     HasLogged = true
                 },
-                new User
+                new()
                 {
                     Id = 3,
                     Name = "Charlie Brown",
@@ -40,17 +49,8 @@ namespace Siftly.UnitTests.Helpers
                     Verified = true,
                     HasLogged = false
                 },
-                new User
-                {
-                    Id = 4,
-                    Name = "Dana White",
-                    DateOfBirth = DateTime.UtcNow.AddYears(1),
-                    LastLogin = DateTime.UtcNow,
-                    SubscriptionId = 3125674,
-                    Verified = true,
-                    HasLogged = false
-                },
-                new User
+
+                new()
                 {
                     Id = 5,
                     Name = "Élodie White",
@@ -65,7 +65,7 @@ namespace Siftly.UnitTests.Helpers
                         City = "Shelbyville"
                     },
                 },
-                new User
+                new()
                 {
                     Id = 6,
                     Name = "Frank Oldman",
@@ -78,7 +78,7 @@ namespace Siftly.UnitTests.Helpers
                         City = "Shelbyville"
                     },
                 },
-                new User
+                new()
                 {
                     Id = 7,
                     Name = "Grace Smith",
@@ -90,7 +90,17 @@ namespace Siftly.UnitTests.Helpers
                         City = "Ogdenville"
                     },
                 },
-                new User
+                new()
+                {
+                    Id = 4,
+                    Name = "Dana White",
+                    DateOfBirth = DateTime.UtcNow.AddYears(1),
+                    LastLogin = DateTime.UtcNow,
+                    SubscriptionId = 3125674,
+                    Verified = true,
+                    HasLogged = false
+                },
+                new()
                 {
                     Id = 8,
                     Name = "Hannah Montana The Third of Her Name",
@@ -104,7 +114,7 @@ namespace Siftly.UnitTests.Helpers
                         City = "North Haverbrook"
                     },
                 },
-                new User
+                new()
                 {
                     Id = 9,
                     Name = "John Wick",
@@ -118,25 +128,7 @@ namespace Siftly.UnitTests.Helpers
                         City = null
                     },
                 },
-                new User
-                {
-                    Id = 10,
-                    Name = string.Empty,
-                    DateOfBirth = new DateTime(2005, 1, 11),
-                    LastLogin = new DateTime(1992, 8, 8),
-                    Verified = false,
-                    HasLogged = true,
-                },
-                new User
-                {
-                    Id = 11,
-                    Name = "Alice Smith",
-                    DateOfBirth = new DateTime(1998, 3, 19),
-                    LastLogin = DateTime.UtcNow.AddDays(-11),
-                    Verified = true,
-                    HasLogged = true
-                },
-                new User
+                new()
                 {
                     Id = 12,
                     Name = null,
@@ -148,6 +140,15 @@ namespace Siftly.UnitTests.Helpers
                         Street = null,
                         City = null
                     },
+                },
+                new()
+                {
+                    Id = 10,
+                    Name = string.Empty,
+                    DateOfBirth = new DateTime(2005, 1, 11),
+                    LastLogin = new DateTime(1992, 8, 8),
+                    Verified = false,
+                    HasLogged = true,
                 },
             };
 
