@@ -22,10 +22,23 @@ namespace Siftly.Helpers
                 .Take(take);
         }
 
+        public static IQueryable<T> Offset<T, S>(
+            IQueryable<T> source,
+            Expression<Func<T, S>> func,
+            SortingDirection sortingDirection,
+            int skip,
+            int take)
+        {
+            return SortingHelper
+                .Sort(source, func, sortingDirection)
+                .Skip(skip)
+                .Take(take);
+        }
+
         public static IQueryable<T> Keyset<T>(
             IQueryable<T> source,
             string orderBy,
-            object value,
+            //object value,
             SortingDirection sortingDirection,
             int skip,
             int take)

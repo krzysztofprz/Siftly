@@ -88,9 +88,50 @@ namespace Siftly.Helpers
                 throw new ArgumentNullException(nameof(source));
             }
 
+            if (func == null)
+            {
+                throw new ArgumentNullException(nameof(func));
+            }
+
+            if (func.Parameters.Count != 1)
+            {
+                throw new ArgumentException($"Invalid number of {func} parameters. Expected 1 parameter.");
+            }
+
+            var parameter = func.Parameters[0];
+            Expression body = NullSafe(func.Body);
+
+            var expression = Expression.Lambda<Func<T, S>>(body, parameter);
+
             return sortingDirection == SortingDirection.Ascending
-                ? source.OrderBy(func)
-                : source.OrderByDescending(func);
+                ? source.OrderBy(expression)
+                : source.OrderByDescending(expression);
+        }
+
+        private static Expression NullSafe(Expression expression)
+        {
+            switch (expression)
+            {
+                case ParameterExpression _:
+                    return expression;
+                case MemberExpression memberExpr:
+                {
+                    var parent = NullSafe(memberExpr.Expression);
+
+                    if (!memberExpr.Type.IsValueType || Nullable.GetUnderlyingType(memberExpr.Type) != null)
+                    {
+                        return Expression.Condition(
+                            Expression.Equal(parent, Expression.Constant(null, parent.Type)),
+                            Expression.Default(memberExpr.Type),
+                            Expression.MakeMemberAccess(parent, memberExpr.Member)
+                        );
+                    }
+
+                    return Expression.MakeMemberAccess(parent, memberExpr.Member);
+                }
+                default:
+                    return expression;
+            }
         }
     }
 }
