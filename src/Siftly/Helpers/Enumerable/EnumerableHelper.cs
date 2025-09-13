@@ -1,12 +1,12 @@
-using Siftly.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Siftly.Model;
 
-namespace Siftly
+namespace Siftly.Helpers.Enumerable
 {
-    public static class EnumerableHelper
+    public sealed class EnumerableHelper
     {
         /// <summary>
         /// Filters the source <see cref="IEnumerable{T}"/> by the specified property and value.

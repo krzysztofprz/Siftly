@@ -1,4 +1,5 @@
 using Siftly.Helpers;
+using Siftly.Helpers.Queryable;
 using Siftly.Model;
 using Siftly.UnitTests.Helpers;
 using Siftly.UnitTests.Model;
@@ -166,6 +167,7 @@ public class PaginationHelperTests
     {
         // Act
         var page = PaginationHelper.Offset(_users, user => user.Id, sortingDirection, skip, take).ToList();
+        // TODO: multiple value pagination and filtering
         //var page = PaginationHelper.Offset(_users, user => new { user.Id, user.Name }, sortingDirection, skip, take).ToList();
 
         // Assert
@@ -210,5 +212,75 @@ public class PaginationHelperTests
         // Assert
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
         Assert.That(actual: page.First().Address?.Street, Is.EqualTo(expectedStreet));
+    }
+
+    [Test]
+    [TestCase(nameof(User.Id), SortingDirection.Ascending, 11, 1, 1, 12)]
+    [TestCase(nameof(User.Id), SortingDirection.Ascending, 2, 5, 5, 3)]
+    [TestCase(nameof(User.Id), SortingDirection.Ascending, 5, 10, 7, 6)]
+    [TestCase(nameof(User.Id), SortingDirection.Ascending, 0, 10, 10, 1)]
+    [TestCase(nameof(User.Id), SortingDirection.Descending, 11, 1, 1, 10)]
+    [TestCase(nameof(User.Id), SortingDirection.Descending, 6, 5, 5, 5)]
+    [TestCase(nameof(User.Id), SortingDirection.Descending, 4, 5, 3, 3)]
+    [TestCase(nameof(User.Id), SortingDirection.Descending, 12, 5, 5, 11)]
+    public void KeysetT_OrderByIntPropertyType_ReturnsPaginated(
+        string sortingProperty,
+        SortingDirection sortingDirection,
+        object key,
+        int take,
+        int expectedCount,
+        int expectedId)
+    {
+        // Act
+        var page = PaginationHelper.Keyset(_users, sortingProperty, key, sortingDirection, take).ToList();
+
+        // Assert
+        Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
+        Assert.That(actual: page.First().Id, Is.EqualTo(expectedId));
+    }
+    
+    // TODO: fix nullable objects
+    [Test]
+    [TestCase(nameof(User.SubscriptionId), SortingDirection.Ascending, 111555, 1, 1, 3125674)]
+    // [TestCase(nameof(User.Id), SortingDirection.Descending, 11, 1, 1, 10)]
+    public void KeysetT_OrderByNullableIntPropertyType_ReturnsPaginated(
+        string sortingProperty,
+        SortingDirection sortingDirection,
+        object key,
+        int take,
+        int expectedCount,
+        int expectedSubscriptionId)
+    {
+        // Act
+        var page = PaginationHelper.Keyset(_users, sortingProperty, key, sortingDirection, take).ToList();
+
+        // Assert
+        Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
+        Assert.That(actual: page.First().SubscriptionId, Is.EqualTo(expectedSubscriptionId));
+    }
+
+    [Test]
+    [TestCase(nameof(User.Name), SortingDirection.Ascending, "Alice Smith", 10, 8, "Bob Johnson")]
+    [TestCase(nameof(User.Name), SortingDirection.Ascending, "Bob Johnson", 5, 5, "Charlie Brown")]
+    [TestCase(nameof(User.Name), SortingDirection.Ascending, "Bob Johnson", 5, 5, "Charlie Brown")]
+    [TestCase(nameof(User.Name), SortingDirection.Ascending, "Charlie Brown", 1, 1, "Dana White")]
+    [TestCase(nameof(User.Name), SortingDirection.Ascending, "Frank Oldman", 5, 3, "Grace Smith")]
+    [TestCase(nameof(User.Name), SortingDirection.Descending, "John Wick", 5, 5, "Hannah Montana The Third of Her Name")]
+    [TestCase(nameof(User.Name), SortingDirection.Descending, "Alice Smith", 5, 2, "")]
+    [TestCase(nameof(User.Name), SortingDirection.Descending, "Hannah Montana The Third of Her Name", 20, 10, "Grace Smith")]
+    public void KeysetT_OrderByStringPropertyType_ReturnsPaginated(
+        string sortingProperty,
+        SortingDirection sortingDirection,
+        object key,
+        int take,
+        int expectedCount,
+        string expectedName)
+    {
+        // Act
+        var page = PaginationHelper.Keyset(_users, sortingProperty, key, sortingDirection, take).ToList();
+
+        // Assert
+        Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
+        Assert.That(actual: page.First().Name, Is.EqualTo(expectedName));
     }
 }

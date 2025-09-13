@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Siftly.Common;
 
-namespace Siftly.Helpers
+namespace Siftly.Helpers.Queryable
 {
     public sealed class FilteringHelper : Helper
     {

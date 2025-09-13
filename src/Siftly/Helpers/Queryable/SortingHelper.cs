@@ -5,14 +5,14 @@ using System.Reflection;
 using Siftly.Common;
 using Siftly.Model;
 
-namespace Siftly.Helpers
+namespace Siftly.Helpers.Queryable
 {
     public sealed class SortingHelper : Helper
     {
-        private static readonly MethodInfo OrderBy = typeof(Queryable).GetMethods()
+        private static readonly MethodInfo OrderBy = typeof(System.Linq.Queryable).GetMethods()
             .Single(x => x.Name == nameof(OrderBy) && x.GetParameters().Length == 2);
 
-        private static readonly MethodInfo OrderByDescending = typeof(Queryable).GetMethods()
+        private static readonly MethodInfo OrderByDescending = typeof(System.Linq.Queryable).GetMethods()
             .Single(x => x.Name == nameof(OrderByDescending) && x.GetParameters().Length == 2);
 
         /// <summary>
