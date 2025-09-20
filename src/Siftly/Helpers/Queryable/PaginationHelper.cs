@@ -76,7 +76,7 @@ namespace Siftly.Helpers.Queryable
             }
 
             var param = Expression.Parameter(typeof(T), Arg);
-            var property = Expression.Property(param, orderBy);
+            var property = GetNestedProperty(param, orderBy);
 
             var constant = Expression.Constant(value, Nullable.GetUnderlyingType(property.Type) ?? property.Type);
             
@@ -100,6 +100,39 @@ namespace Siftly.Helpers.Queryable
 
         public static IQueryable<T> Keyset<T, S>(
             IQueryable<T> source,
+            Expression<Func<T, S>> func,
+            S value,
+            SortingDirection sortingDirection,
+            int take)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            var param = Expression.Parameter(typeof(T), Arg);
+            var property = GetNestedProperty(param, func.Parameters[0].Name);
+            var constant = Expression.Constant(value, typeof(S));
+
+            Expression compare = sortingDirection == SortingDirection.Ascending
+                ? Expression.GreaterThan(property, Expression.Convert(constant, property.Type))
+                : Expression.LessThan(property, Expression.Convert(constant, property.Type));
+
+            var lambda = Expression.Lambda<Func<T, bool>>(compare, param);
+
+            return SortingHelper
+                .Sort(source, func, sortingDirection)
+                .Where(lambda)
+                .Take(take);
+        }
+        
+        public static IQueryable<T> Keyset<T, S>(
+            IQueryable<T> source,
             string orderBy,
             S value,
             SortingDirection sortingDirection,
@@ -116,7 +149,7 @@ namespace Siftly.Helpers.Queryable
             }
 
             var param = Expression.Parameter(typeof(T), Arg);
-            var property = Expression.Property(param, orderBy);
+            var property = GetNestedProperty(param, orderBy);
             var constant = Expression.Constant(value, typeof(S));
 
             Expression compare = sortingDirection == SortingDirection.Ascending
@@ -144,7 +177,7 @@ namespace Siftly.Helpers.Queryable
         //
         // }
         
-        private static Expression GetCompare(MemberExpression property, ConstantExpression constant)
+        private static Expression GetCompare(Expression property, ConstantExpression constant)
         {
             if (property.Type == typeof(string))
             {
