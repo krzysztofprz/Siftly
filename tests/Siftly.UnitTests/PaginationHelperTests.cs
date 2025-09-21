@@ -238,7 +238,7 @@ public class PaginationHelperTests
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
         Assert.That(actual: page.First().Id, Is.EqualTo(expectedId));
     }
-    
+
     // TODO: fix nullable objects
     [Test]
     [TestCase(nameof(User.SubscriptionId), SortingDirection.Ascending, 111555, 1, 1, 3125674)]
@@ -283,7 +283,7 @@ public class PaginationHelperTests
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
         Assert.That(actual: page.First().Name, Is.EqualTo(expectedName));
     }
-    
+
     [Test]
     [TestCase($"{nameof(User.Address)}.{nameof(User.Address.City)}", SortingDirection.Ascending, "Shelbyville", 10, 1, "Springfield")]
     [TestCase($"{nameof(User.Address)}.{nameof(User.Address.City)}", SortingDirection.Ascending, "North Haverbrook", 10, 4, "Ogdenville")]
@@ -306,7 +306,7 @@ public class PaginationHelperTests
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
         Assert.That(actual: page.First().Address?.City, Is.EqualTo(expectedName));
     }
-    
+
     [Test]
     [TestCase(nameof(User.Id), SortingDirection.Ascending, 11, 1, 1, 12)]
     [TestCase(nameof(User.Id), SortingDirection.Ascending, 2, 5, 5, 3)]
@@ -331,8 +331,8 @@ public class PaginationHelperTests
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
         Assert.That(actual: page.First().Id, Is.EqualTo(expectedId));
     }
-    
-        // TODO: fix nullable objects
+
+    // TODO: fix nullable objects
     [Test]
     [TestCase(nameof(User.SubscriptionId), SortingDirection.Ascending, 111555, 1, 1, 3125674)]
     // [TestCase(nameof(User.Id), SortingDirection.Descending, 11, 1, 1, 10)]
@@ -346,7 +346,7 @@ public class PaginationHelperTests
     {
         // Arrange
         int? nullableInt = key;
-        
+
         // Act
         var page = PaginationHelper.Keyset(_users, sortingProperty, nullableInt, sortingDirection, take).ToList();
 
@@ -379,7 +379,7 @@ public class PaginationHelperTests
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
         Assert.That(actual: page.First().Name, Is.EqualTo(expectedName));
     }
-    
+
     [Test]
     [TestCase($"{nameof(User.Address)}.{nameof(User.Address.City)}", SortingDirection.Ascending, "Shelbyville", 10, 1, "Springfield")]
     [TestCase($"{nameof(User.Address)}.{nameof(User.Address.City)}", SortingDirection.Ascending, "North Haverbrook", 10, 4, "Ogdenville")]
@@ -403,4 +403,95 @@ public class PaginationHelperTests
         Assert.That(actual: page.First().Address?.City, Is.EqualTo(expectedName));
     }
 
+    [Test]
+    [TestCase(SortingDirection.Ascending, 11, 1, 1, 12)]
+    [TestCase(SortingDirection.Ascending, 2, 5, 5, 3)]
+    [TestCase(SortingDirection.Ascending, 5, 10, 7, 6)]
+    [TestCase(SortingDirection.Ascending, 0, 10, 10, 1)]
+    [TestCase(SortingDirection.Descending, 11, 1, 1, 10)]
+    [TestCase(SortingDirection.Descending, 6, 5, 5, 5)]
+    [TestCase(SortingDirection.Descending, 4, 5, 3, 3)]
+    [TestCase(SortingDirection.Descending, 12, 5, 5, 11)]
+    public void KeysetTS_Expression_OrderByIntPropertyType_ReturnsPaginated(
+        SortingDirection sortingDirection,
+        int key,
+        int take,
+        int expectedCount,
+        int expectedId)
+    {
+        // Act
+        var page = PaginationHelper.Keyset(_users, x => x.Id, key, sortingDirection, take).ToList();
+
+        // Assert
+        Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
+        Assert.That(actual: page.First().Id, Is.EqualTo(expectedId));
+    }
+
+    // TODO: fix nullable objects
+    [Test]
+    [TestCase(SortingDirection.Ascending, 111555, 1, 1, 3125674)]
+    // [TestCase(nameof(User.Id), SortingDirection.Descending, 11, 1, 1, 10)]
+    public void KeysetTS_Expression_OrderByNullableIntPropertyType_ReturnsPaginated(
+        SortingDirection sortingDirection,
+        int key,
+        int take,
+        int expectedCount,
+        int expectedSubscriptionId)
+    {
+        // Arrange
+        int? nullableInt = key;
+
+        // Act
+        var page = PaginationHelper.Keyset(_users, x => x.SubscriptionId, nullableInt, sortingDirection, take).ToList();
+
+        // Assert
+        Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
+        Assert.That(actual: page.First().SubscriptionId, Is.EqualTo(expectedSubscriptionId));
+    }
+
+    [Test]
+    [TestCase(SortingDirection.Ascending, "Alice Smith", 10, 8, "Bob Johnson")]
+    [TestCase(SortingDirection.Ascending, "Bob Johnson", 5, 5, "Charlie Brown")]
+    [TestCase(SortingDirection.Ascending, "Bob Johnson", 5, 5, "Charlie Brown")]
+    [TestCase(SortingDirection.Ascending, "Charlie Brown", 1, 1, "Dana White")]
+    [TestCase(SortingDirection.Ascending, "Frank Oldman", 5, 3, "Grace Smith")]
+    [TestCase(SortingDirection.Descending, "John Wick", 5, 5, "Hannah Montana The Third of Her Name")]
+    [TestCase(SortingDirection.Descending, "Alice Smith", 5, 2, "")]
+    [TestCase(SortingDirection.Descending, "Hannah Montana The Third of Her Name", 20, 10, "Grace Smith")]
+    public void KeysetTS_Expression_OrderByStringPropertyType_ReturnsPaginated(
+        SortingDirection sortingDirection,
+        string key,
+        int take,
+        int expectedCount,
+        string expectedName)
+    {
+        // Act
+        var page = PaginationHelper.Keyset(_users, x => x.Name, key, sortingDirection, take).ToList();
+
+        // Assert
+        Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
+        Assert.That(actual: page.First().Name, Is.EqualTo(expectedName));
+    }
+
+    [Test]
+    [TestCase(SortingDirection.Ascending, "Shelbyville", 10, 1, "Springfield")]
+    [TestCase(SortingDirection.Ascending, "North Haverbrook", 10, 4, "Ogdenville")]
+    [TestCase(SortingDirection.Ascending, "Ogdenville", 2, 2, "Shelbyville")]
+    [TestCase(SortingDirection.Descending, "Shelbyville", 10, 9, "Ogdenville")]
+    [TestCase(SortingDirection.Descending, "North Haverbrook", 10, 7, null)]
+    [TestCase(SortingDirection.Descending, "North Haverbrook", 5, 5, null)]
+    public void KeysetTS_Expression_OrderByNestedPropertyType_ReturnsPaginated(
+        SortingDirection sortingDirection,
+        string key,
+        int take,
+        int expectedCount,
+        string expectedName)
+    {
+        // Act
+        var page = PaginationHelper.Keyset(_users, x => x.Address.City, key, sortingDirection, take).ToList();
+
+        // Assert
+        Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
+        Assert.That(actual: page.First().Address?.City, Is.EqualTo(expectedName));
+    }
 }
