@@ -78,8 +78,8 @@ namespace Siftly.Helpers.Queryable
             var param = Expression.Parameter(typeof(T), Arg);
             var property = GetNestedProperty(param, orderBy);
 
-            var constant = Expression.Constant(value, Nullable.GetUnderlyingType(property.Type) ?? property.Type);
-            
+            var constant = Expression.Constant(value, property.Type);
+
             Expression compare = GetCompare(property, constant);
 
             var argument = property.Type == typeof(string)
@@ -91,7 +91,7 @@ namespace Siftly.Helpers.Queryable
                 : Expression.LessThan(compare, argument);
 
             var lambda = Expression.Lambda<Func<T, bool>>(comparison, param);
-            
+
             return SortingHelper
                 .Sort(source, orderBy, sortingDirection)
                 .Where(lambda)
@@ -116,53 +116,65 @@ namespace Siftly.Helpers.Queryable
             }
 
             var param = Expression.Parameter(typeof(T), Arg);
-            var property = GetNestedProperty(param, func.Parameters[0].Name);
+            var property = GetNestedProperty(param, func.Body.ToString().Substring(2));
+
+            if (property == null)
+            {
+                throw new ArgumentException($"Provided func: {func} of {nameof(func)} parameter property is not a property of {typeof(T).Name} type.");
+            }
+
             var constant = Expression.Constant(value, typeof(S));
 
-            Expression compare = sortingDirection == SortingDirection.Ascending
-                ? Expression.GreaterThan(property, Expression.Convert(constant, property.Type))
-                : Expression.LessThan(property, Expression.Convert(constant, property.Type));
+            Expression compare = GetCompare(property, constant);
 
-            var lambda = Expression.Lambda<Func<T, bool>>(compare, param);
+            var argument = property.Type == typeof(string)
+                ? Expression.Constant(0)
+                : constant;
+
+            var comparison = sortingDirection == SortingDirection.Ascending
+                ? Expression.GreaterThan(compare, argument)
+                : Expression.LessThan(compare, argument);
+
+            var lambda = Expression.Lambda<Func<T, bool>>(comparison, param);
 
             return SortingHelper
                 .Sort(source, func, sortingDirection)
                 .Where(lambda)
                 .Take(take);
         }
-        
-        public static IQueryable<T> Keyset<T, S>(
-            IQueryable<T> source,
-            string orderBy,
-            S value,
-            SortingDirection sortingDirection,
-            int take)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
 
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            var param = Expression.Parameter(typeof(T), Arg);
-            var property = GetNestedProperty(param, orderBy);
-            var constant = Expression.Constant(value, typeof(S));
-
-            Expression compare = sortingDirection == SortingDirection.Ascending
-                ? Expression.GreaterThan(property, Expression.Convert(constant, property.Type))
-                : Expression.LessThan(property, Expression.Convert(constant, property.Type));
-
-            var lambda = Expression.Lambda<Func<T, bool>>(compare, param);
-
-            return SortingHelper
-                .Sort(source, orderBy, sortingDirection)
-                .Where(lambda)
-                .Take(take);
-        }
+        // public static IQueryable<T> Keyset<T, S>(
+        //     IQueryable<T> source,
+        //     string orderBy,
+        //     S value,
+        //     SortingDirection sortingDirection,
+        //     int take)
+        // {
+        //     if (source == null)
+        //     {
+        //         throw new ArgumentNullException(nameof(source));
+        //     }
+        //
+        //     if (value == null)
+        //     {
+        //         throw new ArgumentNullException(nameof(value));
+        //     }
+        //
+        //     var param = Expression.Parameter(typeof(T), Arg);
+        //     var property = GetNestedProperty(param, orderBy);
+        //     var constant = Expression.Constant(value, typeof(S));
+        //
+        //     Expression compare = sortingDirection == SortingDirection.Ascending
+        //         ? Expression.GreaterThan(property, Expression.Convert(constant, property.Type))
+        //         : Expression.LessThan(property, Expression.Convert(constant, property.Type));
+        //
+        //     var lambda = Expression.Lambda<Func<T, bool>>(compare, param);
+        //
+        //     return SortingHelper
+        //         .Sort(source, orderBy, sortingDirection)
+        //         .Where(lambda)
+        //         .Take(take);
+        // }
 
         // public static IQueryable<T> Keyset<T, S>(
         //     IQueryable<T> source,
@@ -176,17 +188,11 @@ namespace Siftly.Helpers.Queryable
         //     var filtered = FilteringHelper.Filter(sorted, )
         //
         // }
-        
+
         private static Expression GetCompare(Expression property, ConstantExpression constant)
         {
-            if (property.Type == typeof(string))
-            {
-                return Expression.Call(_compareString, property, constant);
-            }
-
-            // TODO: Nullable?.Value
-            return Nullable.GetUnderlyingType(property.Type) != null
-                ? Expression.Property(property, "Value")
+            return property.Type == typeof(string)
+                ? Expression.Call(_compareString, property, constant)
                 : property;
         }
     }

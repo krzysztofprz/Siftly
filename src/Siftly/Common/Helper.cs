@@ -27,14 +27,13 @@ namespace Siftly.Common
                     return null;
                 }
 
-                var propAccess = Expression.Property(expression, propertyInfo);
-
                 if (!expression.Type.IsValueType || Nullable.GetUnderlyingType(expression.Type) != null)
                 {
                     Expression nullValue;
+                    
+                    var propAccess = Expression.Property(expression, propertyInfo);
 
-                    if (!propertyInfo.PropertyType.IsValueType
-                        || Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null)
+                    if (!propertyInfo.PropertyType.IsValueType || Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null)
                     {
                         nullValue = Expression.Constant(null, propertyInfo.PropertyType);
                     }
@@ -51,7 +50,7 @@ namespace Siftly.Common
                     continue;
                 }
 
-                expression = propAccess;
+                expression = Expression.Property(expression, propertyInfo);
             }
 
             return expression;

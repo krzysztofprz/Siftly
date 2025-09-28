@@ -239,19 +239,17 @@ public class PaginationHelperTests
         Assert.That(actual: page.First().Id, Is.EqualTo(expectedId));
     }
 
-    // TODO: fix nullable objects
     [Test]
     [TestCase(nameof(User.SubscriptionId), SortingDirection.Ascending, 111555, 1, 1, 3125674)]
     // [TestCase(nameof(User.Id), SortingDirection.Descending, 11, 1, 1, 10)]
     public void KeysetT_OrderByNullableIntPropertyType_ReturnsPaginated(
         string sortingProperty,
         SortingDirection sortingDirection,
-        object key,
+        int? key,
         int take,
         int expectedCount,
         int expectedSubscriptionId)
     {
-        // Act
         var page = PaginationHelper.Keyset(_users, sortingProperty, key, sortingDirection, take).ToList();
 
         // Assert
@@ -433,16 +431,13 @@ public class PaginationHelperTests
     // [TestCase(nameof(User.Id), SortingDirection.Descending, 11, 1, 1, 10)]
     public void KeysetTS_Expression_OrderByNullableIntPropertyType_ReturnsPaginated(
         SortingDirection sortingDirection,
-        int key,
+        int? key,
         int take,
         int expectedCount,
         int expectedSubscriptionId)
     {
-        // Arrange
-        int? nullableInt = key;
-
         // Act
-        var page = PaginationHelper.Keyset(_users, x => x.SubscriptionId, nullableInt, sortingDirection, take).ToList();
+        var page = PaginationHelper.Keyset(_users, x => x.SubscriptionId, key, sortingDirection, take).ToList();
 
         // Assert
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
