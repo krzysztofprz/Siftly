@@ -167,8 +167,6 @@ public class PaginationHelperTests
     {
         // Act
         var page = PaginationHelper.Offset(_users, user => user.Id, sortingDirection, skip, take).ToList();
-        // TODO: multiple value pagination and filtering
-        //var page = PaginationHelper.Offset(_users, user => new { user.Id, user.Name }, sortingDirection, skip, take).ToList();
 
         // Assert
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
@@ -329,11 +327,12 @@ public class PaginationHelperTests
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
         Assert.That(actual: page.First().Id, Is.EqualTo(expectedId));
     }
-
-    // TODO: fix nullable objects
+    
     [Test]
     [TestCase(nameof(User.SubscriptionId), SortingDirection.Ascending, 111555, 1, 1, 3125674)]
-    // [TestCase(nameof(User.Id), SortingDirection.Descending, 11, 1, 1, 10)]
+    [TestCase(nameof(User.SubscriptionId), SortingDirection.Ascending, 111555, 10, 2, 3125674)]
+    [TestCase(nameof(User.SubscriptionId), SortingDirection.Descending, 3125674, 1, 1, 111555)]
+    [TestCase(nameof(User.SubscriptionId), SortingDirection.Descending, 3125674, 10, 1, 111555)]
     public void KeysetTS_OrderByNullableIntPropertyType_ReturnsPaginated(
         string sortingProperty,
         SortingDirection sortingDirection,
@@ -424,11 +423,12 @@ public class PaginationHelperTests
         Assert.That(actual: page.Count, Is.EqualTo(expectedCount));
         Assert.That(actual: page.First().Id, Is.EqualTo(expectedId));
     }
-
-    // TODO: fix nullable objects
+    
     [Test]
     [TestCase(SortingDirection.Ascending, 111555, 1, 1, 3125674)]
-    // [TestCase(nameof(User.Id), SortingDirection.Descending, 11, 1, 1, 10)]
+    [TestCase(SortingDirection.Ascending, 111555, 10, 2, 3125674)]
+    [TestCase(SortingDirection.Descending, 3125674, 1, 1, 111555)]
+    [TestCase(SortingDirection.Descending, 3125674, 10, 1, 111555)]
     public void KeysetTS_Expression_OrderByNullableIntPropertyType_ReturnsPaginated(
         SortingDirection sortingDirection,
         int? key,

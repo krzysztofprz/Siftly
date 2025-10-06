@@ -2,12 +2,12 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Siftly.Common;
+using Siftly.Extensions;
 using Siftly.Model;
 
 namespace Siftly.Helpers.Queryable
 {
-    public sealed class SortingHelper : Helper
+    public static class SortingHelper
     {
         private static readonly MethodInfo OrderBy = typeof(System.Linq.Queryable).GetMethods()
             .Single(x => x.Name == nameof(OrderBy) && x.GetParameters().Length == 2);
@@ -46,8 +46,8 @@ namespace Siftly.Helpers.Queryable
                 throw new ArgumentException("Invalid argument value.", nameof(sortBy));
             }
 
-            var param = Expression.Parameter(typeof(T), Arg);
-            var property = GetNestedProperty(param, sortBy);
+            var param = Expression.Parameter(typeof(T), ExpressionExtensions.Arg);
+            var property = param.GetNestedProperty(sortBy);
 
             if (property == null)
             {

@@ -2,17 +2,13 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Siftly.Common
+namespace Siftly.Extensions
 {
-    public abstract class Helper
+    internal static class ExpressionExtensions
     {
-        protected const string Arg = "x";
+        internal const string Arg = "x";
 
-        /// <summary>
-        /// Gets an Expression representing a (possibly nested) property access.
-        /// Example: "Address.City" -> x => x.Address.City
-        /// </summary>
-        protected static Expression GetNestedProperty(Expression param, string propertyPath)
+        internal static Expression GetNestedProperty(this Expression param, string propertyPath)
         {
             Expression expression = param;
 
@@ -30,10 +26,11 @@ namespace Siftly.Common
                 if (!expression.Type.IsValueType || Nullable.GetUnderlyingType(expression.Type) != null)
                 {
                     Expression nullValue;
-                    
+
                     var propAccess = Expression.Property(expression, propertyInfo);
 
-                    if (!propertyInfo.PropertyType.IsValueType || Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null)
+                    if (!propertyInfo.PropertyType.IsValueType ||
+                        Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null)
                     {
                         nullValue = Expression.Constant(null, propertyInfo.PropertyType);
                     }

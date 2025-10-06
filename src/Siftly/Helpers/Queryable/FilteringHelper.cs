@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Siftly.Common;
+using Siftly.Extensions;
 
 namespace Siftly.Helpers.Queryable
 {
-    public sealed class FilteringHelper : Helper
+    public static class FilteringHelper
     {
         /// <summary>
         /// Filters the source <see cref="IQueryable{T}"/> by the specified property and filterValue.
@@ -38,8 +38,8 @@ namespace Siftly.Helpers.Queryable
                 throw new ArgumentException("Invalid argument filterValue.", nameof(filterBy));
             }
 
-            var param = Expression.Parameter(typeof(T), Arg);
-            var property = GetNestedProperty(param, filterBy);
+            var param = Expression.Parameter(typeof(T), ExpressionExtensions.Arg);
+            var property = param.GetNestedProperty(filterBy);
 
             if (property == null)
             {
@@ -88,8 +88,8 @@ namespace Siftly.Helpers.Queryable
                 throw new ArgumentException("Invalid argument filterValue.", nameof(filterBy));
             }
 
-            var param = Expression.Parameter(typeof(T), Arg);
-            var property = GetNestedProperty(param, filterBy);
+            var param = Expression.Parameter(typeof(T), ExpressionExtensions.Arg);
+            var property = param.GetNestedProperty(filterBy);
 
             if (property == null)
             {

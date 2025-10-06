@@ -2,14 +2,14 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Siftly.Common;
+using Siftly.Extensions;
 using Siftly.Model;
 
 namespace Siftly.Helpers.Queryable
 {
-    public sealed class PaginationHelper : Helper
+    public static class PaginationHelper
     {
-        private static MethodInfo _compareString =
+        private static readonly MethodInfo CompareString =
             typeof(string).GetMethod(nameof(string.Compare), new[] { typeof(string), typeof(string) });
 
         public static IQueryable<T> Offset<T>(
@@ -75,8 +75,8 @@ namespace Siftly.Helpers.Queryable
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var param = Expression.Parameter(typeof(T), Arg);
-            var property = GetNestedProperty(param, orderBy);
+            var param = Expression.Parameter(typeof(T), ExpressionExtensions.Arg);
+            var property = param.GetNestedProperty(orderBy);
 
             var constant = Expression.Constant(value, property.Type);
 
@@ -115,12 +115,13 @@ namespace Siftly.Helpers.Queryable
                 throw new ArgumentNullException(nameof(value));
             }
 
-            var param = Expression.Parameter(typeof(T), Arg);
-            var property = GetNestedProperty(param, func.Body.ToString().Substring(2));
+            var param = Expression.Parameter(typeof(T), ExpressionExtensions.Arg);
+            var property = param.GetNestedProperty(func.Body.ToString().Substring(2));
 
             if (property == null)
             {
-                throw new ArgumentException($"Provided func: {func} of {nameof(func)} parameter property is not a property of {typeof(T).Name} type.");
+                throw new ArgumentException(
+                    $"Provided func: {func} of {nameof(func)} parameter property is not a property of {typeof(T).Name} type.");
             }
 
             var constant = Expression.Constant(value, typeof(S));
@@ -143,56 +144,10 @@ namespace Siftly.Helpers.Queryable
                 .Take(take);
         }
 
-        // public static IQueryable<T> Keyset<T, S>(
-        //     IQueryable<T> source,
-        //     string orderBy,
-        //     S value,
-        //     SortingDirection sortingDirection,
-        //     int take)
-        // {
-        //     if (source == null)
-        //     {
-        //         throw new ArgumentNullException(nameof(source));
-        //     }
-        //
-        //     if (value == null)
-        //     {
-        //         throw new ArgumentNullException(nameof(value));
-        //     }
-        //
-        //     var param = Expression.Parameter(typeof(T), Arg);
-        //     var property = GetNestedProperty(param, orderBy);
-        //     var constant = Expression.Constant(value, typeof(S));
-        //
-        //     Expression compare = sortingDirection == SortingDirection.Ascending
-        //         ? Expression.GreaterThan(property, Expression.Convert(constant, property.Type))
-        //         : Expression.LessThan(property, Expression.Convert(constant, property.Type));
-        //
-        //     var lambda = Expression.Lambda<Func<T, bool>>(compare, param);
-        //
-        //     return SortingHelper
-        //         .Sort(source, orderBy, sortingDirection)
-        //         .Where(lambda)
-        //         .Take(take);
-        // }
-
-        // public static IQueryable<T> Keyset<T, S>(
-        //     IQueryable<T> source,
-        //     Expression<Func<T, S>> func,
-        //     SortingDirection sortingDirection,
-        //     int take)
-        // {
-        //     var sorted = SortingHelper
-        //         .Sort(source, func, sortingDirection);
-        //     
-        //     var filtered = FilteringHelper.Filter(sorted, )
-        //
-        // }
-
         private static Expression GetCompare(Expression property, ConstantExpression constant)
         {
             return property.Type == typeof(string)
-                ? Expression.Call(_compareString, property, constant)
+                ? Expression.Call(CompareString, property, constant)
                 : property;
         }
     }
