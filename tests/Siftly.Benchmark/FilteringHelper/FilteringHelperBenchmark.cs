@@ -6,35 +6,22 @@ using Siftly.UnitTests.Model;
 
 namespace Siftly.Benchmark.FilteringHelper;
 
+[MemoryDiagnoser]
 public class FilteringHelperBenchmark
 {
-    const int _id = 1000;
-    static IQueryable<User> _users;
-
     [GlobalSetup]
-    public void Setup()
-    {
-        var fixture = new Fixture();
-        int id = 1;
-        fixture.Customize<User>(x => x
-            .With(p => p.Id, () => id++)
-            .With(p => p.Name, () => $"User_{Guid.NewGuid()}"));
-
-        _users = fixture.CreateMany<User>(2000)
-            .ToList()
-            .AsQueryable();
-    }
+    public void Setup() => TestConfiguration.Setup();
 
     [Benchmark]
     public void SiftlyFilter()
     {
         var result = Helpers.Queryable.FilteringHelper
-            .Filter(_users, nameof(User.Id), _id).ToList();
+            .Filter(TestConfiguration.Users, nameof(User.Id), TestConfiguration.Id).ToList();
     }
 
     [Benchmark]
     public void LinqFilter()
     {
-        var result = _users.Where(x => x.Id == _id).ToList();
+        var result = TestConfiguration.Users.Where(x => x.Id == TestConfiguration.Id).ToList();
     }
 }

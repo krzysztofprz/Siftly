@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -8,15 +9,19 @@ namespace Siftly.Extensions
     {
         internal const string Arg = "x";
 
+        private static readonly ConcurrentDictionary<(Type, string), PropertyInfo> PropertyCache = new();
+
         internal static Expression GetNestedProperty(this Expression param, string propertyPath)
         {
             Expression expression = param;
 
             foreach (var member in propertyPath.Split('.'))
             {
-                var propertyInfo = expression.Type.GetProperty(
-                    member,
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+                var propertyInfo = PropertyCache.GetOrAdd(
+                    (expression.Type, member),
+                    key => key.Item1.GetProperty(
+                        key.Item2,
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase));
 
                 if (propertyInfo == null)
                 {

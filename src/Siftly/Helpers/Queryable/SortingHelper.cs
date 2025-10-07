@@ -16,11 +16,11 @@ namespace Siftly.Helpers.Queryable
             .Single(x => x.Name == nameof(OrderByDescending) && x.GetParameters().Length == 2);
 
         /// <summary>
-        /// Sorts the source <see cref="IQueryable"/> by the specified property in the given direction.
+        /// Sorts the source <see cref="IQueryable{T}"/> by the specified property in the given direction.
         /// </summary>
         /// <typeparam name="T">The type of the elements in the source.</typeparam>
         /// <param name="source">The source queryable collection.</param>
-        /// <param name="sortBy">The property name to sort by (case-insensitive).</param>
+        /// <param name="sortBy">The property name to sort by (case-insensitive, supports nested properties).</param>
         /// <param name="sortingDirection">The direction to sort (ascending or descending). Defaults to ascending.</param>
         /// <returns>
         /// An <see cref="IQueryable{T}"/> with the elements sorted by the specified property and direction.
@@ -78,6 +78,12 @@ namespace Siftly.Helpers.Queryable
         /// <returns>
         /// An <see cref="IQueryable{T}"/> with the elements sorted by the specified key and direction.
         /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <paramref name="source"/> or <paramref name="func"/> is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if <paramref name="func"/> does not have exactly one parameter.
+        /// </exception>
         public static IQueryable<T> Sort<T, S>(
             IQueryable<T> source,
             Expression<Func<T, S>> func,

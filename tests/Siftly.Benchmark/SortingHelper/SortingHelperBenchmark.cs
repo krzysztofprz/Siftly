@@ -4,18 +4,22 @@ using Siftly.UnitTests.Model;
 
 namespace Siftly.Benchmark.SortingHelper;
 
+[MemoryDiagnoser]
 public class SortingHelperBenchmark
 {
-    // [Benchmark]
-    // public void SiftlySorting()
-    // {
-    //     var result = Helpers.Queryable.FilteringHelper
-    //         .Filter(TestConfiguration._users, nameof(User.Id), TestConfiguration._id).ToList();
-    // }
-    //
-    // [Benchmark]
-    // public void LinqSorting()
-    // {
-    //     var result = TestConfiguration._users.OrderBy(x => x.Id).ToList();
-    // }
+    [GlobalSetup]
+    public void Setup() => TestConfiguration.Setup();
+
+    [Benchmark]
+    public void SiftlySorting()
+    {
+        var result = Helpers.Queryable.SortingHelper
+            .Sort(TestConfiguration.Users, nameof(User.Id)).ToList();
+    }
+
+    [Benchmark]
+    public void LinqSorting()
+    {
+        var result = TestConfiguration.Users.OrderBy(x => x.Id).ToList();
+    }
 }
