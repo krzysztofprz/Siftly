@@ -3,6 +3,22 @@
   <PropertyGroup>
   <TargetFramework>netstandard2.0</TargetFramework>
   <LangVersion>latest</LangVersion>
+  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  <Title>Siftly</Title>
+  <Authors>Kris Przyluski</Authors>
+  <Description>Siftly is the lightweight .NET library for dynamic filtering, sorting, and pagination of generic collections. It enables runtime construction of LINQ-to-SQL (IQueryable&lt;T&gt;) queries using property names or expressions.</Description>
+  <PackageIcon>favicon-32x32.png</PackageIcon>
+  <RepositoryUrl>https://github.com/krzysztofprz/Siftly</RepositoryUrl>
+  <RepositoryType>git</RepositoryType>
+  <PackageTags>dotnet;linq;entityframework;filtering;sorting;pagination</PackageTags>
+  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  <PackageLicenseUrl>https://github.com/krzysztofprz/Siftly?tab=MIT-1-ov-file#readme</PackageLicenseUrl>
+  <PackageReadmeFile>README.md</PackageReadmeFile>    
   </PropertyGroup>
+
+  <ItemGroup>
+      <None Include="favicon-32x32.png" Pack="true" PackagePath="" />
+      <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 
 </Project>
