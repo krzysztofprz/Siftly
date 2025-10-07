@@ -92,7 +92,16 @@ Processor	AMD Ryzen 5 7535HS with Radeon Graphics, 3301 Mhz, 6 Core(s), 12 Logic
 
 ## Installation
 
-*(To be added once published to NuGet)*
+.NET CLI
+```
+dotnet add package Siftly --version 1.0.1
+```
+
+Project package reference
+```
+<PackageReference Include="Siftly" Version="1.0.1" />
+```
+
 
 ---
 ## Future Development

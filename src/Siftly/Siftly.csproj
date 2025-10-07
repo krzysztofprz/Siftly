@@ -4,6 +4,7 @@
   <TargetFramework>netstandard2.0</TargetFramework>
   <LangVersion>latest</LangVersion>
   <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  <Version>1.0.1</Version>
   <Title>Siftly</Title>
   <Authors>Kris Przyluski</Authors>
   <Description>Siftly is the lightweight .NET library for dynamic filtering, sorting, and pagination of generic collections. It enables runtime construction of LINQ-to-SQL (IQueryable&lt;T&gt;) queries using property names or expressions.</Description>
