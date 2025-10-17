@@ -586,5 +586,271 @@ namespace Siftly.UnitTests
             // Assert
             Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
         }
+
+        [TestCase(1, 1)]
+        [TestCase(2, 1)]
+        [TestCase(11, 1)]
+        [TestCase(12, 1)]
+        [TestCase(0, 0)]
+        [TestCase(55, 0)]
+        public void FilterTS_IntPropertyType_IdProperty_ReturnsFiltered(
+            int filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Id, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(111555, 1)]
+        [TestCase(3125674, 2)]
+        public void FilterTS_NullableIntPropertyType_SubscriptionIdProperty_NotNull_ReturnsFiltered(
+            int? filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.SubscriptionId, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(9)]
+        public void FilterTS_NullableIntPropertyType_SubscriptionIdProperty_Null_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            int? subscriptionId = null;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.SubscriptionId, subscriptionId).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase("Alice Smith", 2)]
+        [TestCase(" ", 0)]
+        [TestCase("    ", 0)]
+        public void FilterTS_StringPropertyType_NameProperty_NotNullOrEmpty_ReturnsFiltered(
+            string filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Name, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(1)]
+        public void FilterTS_StringPropertyType_NameProperty_Empty_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            string filteringValue = "";
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Name, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(1)]
+        public void FilterTS_StringPropertyType_NameProperty_StringEmpty_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            string filteringValue = string.Empty;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Name, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(1)]
+        public void FilterTS_StringPropertyType_NameProperty_Null_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            string filteringValue = null;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Name, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase("2005-1-11", 2)]
+        [TestCase("1998-3-19", 1)]
+        [TestCase("1940-03-10", 1)]
+        [TestCase("1990-1-01", 1)]
+        [TestCase("2220-01-01", 0)]
+        public void FilterTS_DateTimePropertyType_DateOfBirthProperty_ReturnsFiltered(
+            string filteringValue,
+            int expectedCount)
+        {
+            // Arrange
+            DateTime dateOfBirth = DateTime.Parse(filteringValue);
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.DateOfBirth, dateOfBirth).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase("1992-8-8", 1)]
+        [TestCase("2101-1-1", 0)]
+        public void FilterTS_NullableDateTimePropertyType_LastLoginProperty_NotNull_ReturnsFiltered(
+            string filteringValue,
+            int expectedCount)
+        {
+            // Arrange
+            DateTime? lastLogin = DateTime.Parse(filteringValue);
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.LastLogin, lastLogin).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(4)]
+        public void FilterTS_NullableDateTimePropertyType_LastLoginProperty_Null_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            DateTime? lastLogin = null;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.LastLogin, lastLogin).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(true, 7)]
+        [TestCase(false, 5)]
+        public void FilterTS_BoolPropertyType_VerifiedProperty_ReturnsFiltered(
+            bool filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Verified, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(true, 4)]
+        [TestCase(false, 5)]
+        public void FilterTS_NullableBoolPropertyType_HasLoggedProperty_NotNull_ReturnsFiltered(
+            bool filteringValue,
+            int expectedCount)
+        {
+            // Arrange
+            bool? hasLogged = filteringValue;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.HasLogged, hasLogged).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(3)]
+        public void FilterTS_NullableBoolPropertyType_HasLoggedProperty_Null_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            bool? hasLogged = null;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.HasLogged, hasLogged).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase("Springfield", 1)]
+        [TestCase("Shelbyville", 2)]
+        [TestCase("", 0)]
+        [TestCase(" ", 0)]
+        [TestCase("   ", 0)]
+        public void FilterTS_NestedPropertyType_AddressCityProperty_NotNull_ReturnsFiltered(
+            string filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Address.City, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(7)]
+        public void FilterTS_NestedPropertyType_AddressCityProperty_Null_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            string nullCity = null;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Address.City, nullCity).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase("789 Oak St", 1)]
+        [TestCase("456 Elm St", 2)]
+        [TestCase("   ", 1)]
+        [TestCase("", 1)]
+        [TestCase(" ", 0)]
+        public void FilterTS_NestedPropertyType_AddressStreetProperty_NotNull_ReturnsFiltered(
+            string filteringValue,
+            int expectedCount)
+        {
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Address.Street, filteringValue).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(1)]
+        public void FilterTS_NestedPropertyType_AddressStreetProperty_StringEmpty_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            var emptyStreet = string.Empty;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Address.Street, emptyStreet).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
+
+        [TestCase(6)]
+        public void FilterTS_NestedPropertyType_AddressStreetProperty_Null_ReturnsFiltered(
+            int expectedCount)
+        {
+            // Arrange
+            string nullStreet = null;
+
+            // Act
+            var result = FilteringHelper.Filter(_users, user => user.Address.Street, nullStreet).ToList();
+
+            // Assert
+            Assert.That(actual: result.Count, Is.EqualTo(expectedCount));
+        }
     }
 }

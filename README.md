@@ -1,8 +1,11 @@
 # Siftly
 
 Siftly is a lightweight .NET library for dynamic _filtering_, _sorting_, and _pagination_ of generic collections. It enables runtime construction of LINQ-to-SQL (`IQueryable<T>`) queries using property names or expressions. Siftly is built for APIs and data access layers that require user-driven or dynamic querying, and works with Entity Framework and other LINQ providers. [Siftly methods are nearly as fast as direct LINQ](#benchmark-results), with minimal overhead for dynamic property access.
+<br>
+If you find this project useful, please consider giving it a ⭐ on GitHub!
 
 ---
+
 
 ## Features
 
@@ -64,26 +67,30 @@ Processor	AMD Ryzen 5 7535HS with Radeon Graphics, 3301 Mhz, 6 Core(s), 12 Logic
   DefaultJob : .NET 8.0.20 (8.0.2025.41914), X64 RyuJIT AVX2
 
 ```
-| Method       | Mean     | Error   | StdDev  | Gen0   | Gen1   | Allocated |
-|------------- |---------:|--------:|--------:|-------:|-------:|----------:|
-| SiftlyFilter | 240.2 μs | 2.71 μs | 2.26 μs | 0.9766 | 0.4883 |  11.48 KB |
-| LinqFilter   | 221.0 μs | 2.41 μs | 2.01 μs | 0.9766 | 0.4883 |  11.04 KB |
+| Method                     | Mean     | Error   | StdDev  | Gen0   | Gen1   | Allocated |
+|--------------------------- |---------:|--------:|--------:|-------:|-------:|----------:|
+| SiftlyFilterByPropertyName | 236.8 μs | 4.27 μs | 3.79 μs | 0.9766 | 0.4883 |  11.48 KB |
+| SiftlyFilterByExpression   | 222.2 μs | 3.10 μs | 2.42 μs | 0.9766 | 0.4883 |  11.31 KB |
+| LinqFilter                 | 217.9 μs | 3.89 μs | 3.03 μs | 0.9766 | 0.4883 |  10.92 KB |
 ```
 
 ```
-| Method        | Mean     | Error   | StdDev  | Gen0   | Gen1   | Allocated |
-|-------------- |---------:|--------:|--------:|-------:|-------:|----------:|
-| SiftlySorting | 348.8 μs | 3.71 μs | 3.29 μs | 8.7891 | 3.9063 |  74.68 KB |
-| LinqSorting   | 322.7 μs | 2.98 μs | 2.49 μs | 8.7891 | 4.3945 |   74.2 KB |
+| Method                      | Mean     | Error   | StdDev  | Gen0   | Gen1   | Allocated |
+|---------------------------- |---------:|--------:|--------:|-------:|-------:|----------:|
+| SiftlySortingByPropertyName | 341.0 μs | 4.87 μs | 4.06 μs | 8.7891 | 3.9063 |  74.68 KB |
+| SiftlySortingByExpression   | 318.7 μs | 2.62 μs | 2.19 μs | 8.7891 | 4.3945 |  74.79 KB |
+| LinqSorting                 | 319.9 μs | 4.11 μs | 3.21 μs | 8.7891 | 4.3945 |   74.2 KB |
 ```
 
 ```
-| Method                 | Mean     | Error   | StdDev  | Gen0   | Gen1   | Allocated |
-|----------------------- |---------:|--------:|--------:|-------:|-------:|----------:|
-| SiftlyOffsetPagination | 360.7 μs | 1.16 μs | 1.03 μs | 5.3711 | 2.4414 |  46.63 KB |
-| LinqOffestPagination   | 334.9 μs | 1.20 μs | 1.07 μs | 5.3711 | 2.4414 |  46.15 KB |
-| SiftlyKeysetPagination | 516.4 μs | 1.82 μs | 1.52 μs | 5.8594 | 4.8828 |  52.17 KB |
-| LinqKeysetPagination   | 528.8 μs | 1.97 μs | 1.64 μs | 4.8828 | 3.9063 |  43.87 KB |
+| Method                               | Mean     | Error    | StdDev   | Gen0   | Gen1   | Allocated |
+|------------------------------------- |---------:|---------:|---------:|-------:|-------:|----------:|
+| SiftlyOffsetPaginationByPropertyName | 358.9 μs |  6.37 μs |  5.95 μs | 5.3711 | 2.4414 |  46.63 KB |
+| SiftlyOffsetPaginationByExpression   | 330.3 μs |  1.22 μs |  1.08 μs | 5.3711 | 2.4414 |  46.53 KB |
+| LinqOffestPagination                 | 393.9 μs | 19.34 μs | 57.03 μs | 5.3711 | 2.4414 |  46.17 KB |
+| SiftlyKeysetPaginationByPropertyName | 519.6 μs |  9.41 μs |  7.85 μs | 5.8594 | 4.8828 |  52.17 KB |
+| SiftlyKeysetPaginationByExpression   | 501.9 μs |  3.78 μs |  3.16 μs | 5.8594 | 4.8828 |  52.26 KB |
+| LinqKeysetPagination                 | 520.8 μs |  2.47 μs |  2.06 μs | 4.8828 | 3.9063 |  43.87 KB |
 ```
 
 *Benchmarks run on 2,000 user objects, .NET 8.0, Release mode.*
@@ -94,22 +101,18 @@ Processor	AMD Ryzen 5 7535HS with Radeon Graphics, 3301 Mhz, 6 Core(s), 12 Logic
 
 .NET CLI
 ```
-dotnet add package Siftly --version 1.0.1
+dotnet add package Siftly --version 1.1.0
 ```
 
 Project package reference
 ```
-<PackageReference Include="Siftly" Version="1.0.1" />
+<PackageReference Include="Siftly" Version="1.1.0" />
 ```
 
 
 ---
 ## Future Development
 
-- **Filtering with expression:**
-  ```csharp
-  var filtered = FilteringHelper.Filter(users, u => u.FirstName, "John");
-  ```
 - **Multi-Property Filtering:**  
   Support for filtering on multiple properties at once, e.g.:
   ```csharp

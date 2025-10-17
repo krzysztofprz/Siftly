@@ -105,39 +105,13 @@ namespace Siftly.Helpers.Queryable
             }
 
             var parameter = func.Parameters[0];
-            Expression body = NullSafe(func.Body);
+            Expression body = ExpressionExtensions.NullSafe(func.Body);
 
             var expression = Expression.Lambda<Func<T, S>>(body, parameter);
 
             return sortingDirection == SortingDirection.Ascending
                 ? source.OrderBy(expression)
                 : source.OrderByDescending(expression);
-        }
-
-        private static Expression NullSafe(Expression expression)
-        {
-            switch (expression)
-            {
-                case ParameterExpression _:
-                    return expression;
-                case MemberExpression memberExpr:
-                {
-                    var parent = NullSafe(memberExpr.Expression);
-
-                    if (!memberExpr.Type.IsValueType || Nullable.GetUnderlyingType(memberExpr.Type) != null)
-                    {
-                        return Expression.Condition(
-                            Expression.Equal(parent, Expression.Constant(null, parent.Type)),
-                            Expression.Default(memberExpr.Type),
-                            Expression.MakeMemberAccess(parent, memberExpr.Member)
-                        );
-                    }
-
-                    return Expression.MakeMemberAccess(parent, memberExpr.Member);
-                }
-                default:
-                    return expression;
-            }
         }
     }
 }

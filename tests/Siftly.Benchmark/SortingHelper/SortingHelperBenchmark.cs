@@ -11,10 +11,17 @@ public class SortingHelperBenchmark
     public void Setup() => TestConfiguration.Setup();
 
     [Benchmark]
-    public void SiftlySorting()
+    public void SiftlySortingByPropertyName()
     {
         var result = Helpers.Queryable.SortingHelper
             .Sort(TestConfiguration.Users, nameof(User.Id)).ToList();
+    }
+
+    [Benchmark]
+    public void SiftlySortingByExpression()
+    {
+        var result = Helpers.Queryable.SortingHelper
+            .Sort(TestConfiguration.Users, x => x.Id).ToList();
     }
 
     [Benchmark]

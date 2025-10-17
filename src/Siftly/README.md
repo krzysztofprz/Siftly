@@ -19,6 +19,9 @@ var users = new List<User>
 // Filtering by property name (case-insensitive)
 var filtered = FilteringHelper.Filter(users, "FirstName", "John");
 
+// Filtering with expression
+var filteredExpr = FilteringHelper.Filter(users, u => u.FirstName, "John");
+
 // Filtering with strong typing
 var filteredTyped = FilteringHelper.Filter(users, "Age", 30);
 
@@ -26,15 +29,21 @@ var filteredTyped = FilteringHelper.Filter(users, "Age", 30);
 var sorted = SortingHelper.Sort(users, "LastName", SortingDirection.Ascending);
 
 // Sorting with expression
-var sortedExpr = SortingHelper.Sort(users, u => u.Age, SortingDirection.Descending);
+var sortedExpr = SortingHelper.Sort(users, u => u.LastName, SortingDirection.Descending);
 
 // Offset pagination
 var paged = PaginationHelper.Offset(users, "Id", SortingDirection.Ascending, skip: 10, take: 20);
+
+// Offset pagination with expression
+var pagedExpr = PaginationHelper.Offset(users, u => u.Id, SortingDirection.Ascending, skip: 10, take: 20);
 
 // Keyset pagination
 // Assume lastSeenId is defined
 var keysetPaged = PaginationHelper.Keyset(users, "Id", lastSeenId, SortingDirection.Ascending, take: 20);
 
+// Keyset pagination with expression
+// Assume lastSeenId is defined
+var keysetPagedExpr = PaginationHelper.Keyset(users, u => u.Id, lastSeenId, SortingDirection.Ascending, take: 20);
 
 // Usage with Entity Framework (DbContext)
 // var filteredDb = FilteringHelper.Filter(dbContext.Users, "FirstName", "John");

@@ -12,10 +12,17 @@ public class PaginationHelperBenchmark
     public void Setup() => TestConfiguration.Setup();
 
     [Benchmark]
-    public void SiftlyOffsetPagination()
+    public void SiftlyOffsetPaginationByPropertyName()
     {
         var result = Helpers.Queryable.PaginationHelper
             .Offset(TestConfiguration.Users, nameof(User.Id), SortingDirection.Ascending, 10, 10).ToList();
+    }
+
+    [Benchmark]
+    public void SiftlyOffsetPaginationByExpression()
+    {
+        var result = Helpers.Queryable.PaginationHelper
+            .Offset(TestConfiguration.Users, x => x.Id, SortingDirection.Ascending, 10, 10).ToList();
     }
 
     [Benchmark]
@@ -25,10 +32,17 @@ public class PaginationHelperBenchmark
     }
 
     [Benchmark]
-    public void SiftlyKeysetPagination()
+    public void SiftlyKeysetPaginationByPropertyName()
     {
         var result = Helpers.Queryable.PaginationHelper
             .Keyset(TestConfiguration.Users, nameof(User.Id), TestConfiguration.Id, SortingDirection.Ascending, 10).ToList();
+    }
+
+    [Benchmark]
+    public void SiftlyKeysetPaginationByExpression()
+    {
+        var result = Helpers.Queryable.PaginationHelper
+            .Keyset(TestConfiguration.Users, x => x.Id, TestConfiguration.Id, SortingDirection.Ascending, 10).ToList();
     }
 
     [Benchmark]
